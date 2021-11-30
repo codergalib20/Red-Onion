@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 import backgroundImage from "../../images/bannerbackground.png";
 import logoTwo from "../../images/logo2.png";
 const registerBackground = {
@@ -10,10 +11,16 @@ const registerBackground = {
   backgroundRepeat: "no-repeat",
 };
 const Login = () => {
+  const {signIn, isLoading}= useAuth()
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const history = useHistory();
+  const location = useLocation();    
+  const onSubmit = (data) => {
+    signIn(data.email,data.password, location, history)
+  };
   return (
-    <div
+    <>
+    {!isLoading && <div
       style={registerBackground}
       className="flex items-center justify-center min-h-screen"
     >
@@ -47,7 +54,15 @@ const Login = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </div>}
+    {
+      isLoading && <div className="flex items-center justify-center min-h-screen">
+         <div className="flex items-center justify-center min-h-screen">
+           <div class="lds-hourglass"></div>
+         </div>
+      </div>
+    }
+    </>
   );
 };
 

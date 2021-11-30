@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 import useAuth from '../../hooks/useAuth';
 import backgroundImage from "../../images/bannerbackground.png";
@@ -18,13 +18,14 @@ const registerBackground = {
 const Register = () => {
   const { register, handleSubmit } = useForm();
   const {newUser, isLoading } = useAuth()
+  const history = useHistory()
   const onSubmit = (data) => {
       if(data.password !== data.password2){
           swal("Password not match", "", "error");
           return;
       }
-      newUser(data.email, data.password)
-  };
+      newUser(data.email, data.password, data.name,  history)
+  }; 
   return (
     <>
     {!isLoading && <div
@@ -74,7 +75,11 @@ const Register = () => {
     </div>
     }
     {
-      isLoading && <div class="loader">Loading...</div>
+      isLoading && <div className="flex items-center justify-center min-h-screen">
+         <div className="flex items-center justify-center min-h-screen">
+           <div class="lds-hourglass"></div>
+         </div>
+      </div>
     }
     </>
   );

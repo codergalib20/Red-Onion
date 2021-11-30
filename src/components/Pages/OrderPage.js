@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { ImCart } from "react-icons/im";
 import { Link, useHistory, useParams } from "react-router-dom";
+import swal from "sweetalert";
+import useAuth from "../../hooks/useAuth";
 
 const OrderPage = () => {
+  const {user} = useAuth();
   const { order } = useParams();
   const history = useHistory();
   const [food, setFood] = useState({});
@@ -18,7 +21,43 @@ const OrderPage = () => {
   const [cartCount, setCartCount] = useState(1);
 
   const handleClickAddToCart = (foodData) => {
-      console.log(foodData)
+      const data = {}
+      data.for = foodData.for;
+      data.name = foodData.name;
+      data.img = foodData.img;
+      data.img2 = foodData.img2;
+      data.para = foodData.para;
+      data.price = foodData.price;
+      data.userName = user.displayName;
+      data.email = user.email;
+      data.count = cartCount;
+      
+      // fetch('http://localhost:5000/orders', {
+      //     method: 'POST',
+      //     headers: {
+      //         'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify(data)
+      //     .then((res) => res.json())
+      //     .then((data) => {
+      //         console.log(data);
+      //     })
+      // })
+      fetch("http://localhost:5000/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.insertedId) {
+          swal("Add Cart", "Your product cart added", "success");
+          history.replace("/cart");
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -26,7 +65,7 @@ const OrderPage = () => {
       <div className="container mx-auto py-6">
         <Link to="/">Home</Link>
       </div>
-      <div className="container mx-auto flex items-center justify-center">
+      <div className="container mx-auto flex items-center justify-between">
         <div className="w-1/2">
           <h1 className="text-3xl font-medium mb-3">{name}</h1>
           <p className="text-base font-medium text-gray-500 text-justify">
@@ -57,12 +96,12 @@ const OrderPage = () => {
               />
             </div>
           </div>
-          <Link
+          <button
             onClick={() => handleClickAddToCart(food)}
-            className="flex items-center justify-center rounded-full w-28 bg-red-500 text-white p-2 "
+            className="cursor-pointer flex items-center justify-center rounded-full w-28 bg-red-500 text-white p-2 "
           >
             <ImCart className="mr-2" /> Add{" "}
-          </Link>
+          </button>
 
           <div>
             <div className="flex items-center pt-10">
@@ -83,7 +122,7 @@ const OrderPage = () => {
         </div>
         <div className="w-1/2">
           <img
-            className="w-4/5"
+            className="w-4/5" style={{marginLeft: 'auto'}}
             src={!selectedImg ? img : selectedImg}
             alt=""
           />

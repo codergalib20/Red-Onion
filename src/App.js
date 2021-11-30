@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import Login from "./components/Login/Login";
+import PrivateRoute from "./components/Login/PrivateRoute/PrivateRoute";
 import Register from "./components/Login/Register";
 import Cart from "./components/Pages/Cart";
 import Home from "./components/Pages/Home";
@@ -11,31 +11,9 @@ import Header from "./components/Shared/Header";
 import AuthProvider from "./contexts/AuthProvider";
 
 function App() {
-  const [preload, setPreload] = useState(true);
-  useEffect(() => {
-    const preLoader = document.getElementById("preloader");
-    setTimeout(() => {
-      preLoader.style.display = "none";
-      setPreload(false);
-    }, 8000);
-  }, []);
   return (
     <AuthProvider>
       <Router>
-        {preload === true ? (
-          <div
-            id="preloader"
-            className="flex items-center justify-center min-h-screen"
-          >
-            <div className="loader">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
-        ) : (
           <Switch>
             <Route exact path="/">
               <Header />
@@ -58,13 +36,12 @@ function App() {
             <Route path="/register">
               <Register />
             </Route>
-            <Route path="/food/:order">
+            <PrivateRoute  path="/food/:order">
               <Header />
               <OrderPage />
               <Footer />
-            </Route>
+            </PrivateRoute>
           </Switch>
-        )}
       </Router>
     </AuthProvider>
   );
